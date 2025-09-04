@@ -22,8 +22,15 @@ import java.util.Objects;
 @RequestMapping("/memo")
 public class MemoController {
 
+//    @ExceptionHandler(Exception.class)
+//    public String exception_handler(Exception e){
+//        log.error("MemoController's Exception..." + e);
+//        return "memo/error";
+//    }
+
+
     @InitBinder //WebDataBinder  초기화
-    public void dataBinder(WebDataBinder webDataBinder){ //WebDataBinder 요청 매개변수(form 또는 query 데이터)를 모델 객체에 바인딩
+    public void dataBinder(WebDataBinder webDataBinder) throws Exception{ //WebDataBinder 요청 매개변수(form 또는 query 데이터)를 모델 객체에 바인딩
         log.info("MemoController's dataBinder..." + webDataBinder);
         webDataBinder.registerCustomEditor(LocalDate.class, "data_test",new DataTestEditor() );
         //Local class의 필드(data_Test)를 새로운  DataTestEditor로 반환
@@ -35,7 +42,9 @@ public class MemoController {
             log.info("DataTestEditor's setAsText text : " + text);
             LocalDate date = null;
             if(text.isEmpty()){
-                date = LocalDate.now(); //text가 비어 있다면 현재 날짜 고정
+                date = LocalDate.now();
+                 //text가 비어 있다면 현재 날짜 고정
+
             }else{
                 //format 확인(yyy#MM#dd)
                 text = text.replaceAll("#","-"); //# -> -
@@ -46,11 +55,12 @@ public class MemoController {
     }
 
     @GetMapping("/add")
-    public void add_memo_get() {
+    public void add_memo_get()throws Exception {
         log.info("GET /memo/add...");
     }
     @PostMapping("/add")
-    public void add_memo_post(@Valid MemoDto dto, BindingResult bindingResult, Model model){  //BindingResult => 검증 오류 처리 및 보관 객체
+    public void add_memo_post(@Valid MemoDto dto, BindingResult bindingResult, Model model) throws Exception
+    {  //BindingResult => 검증 오류 처리 및 보관 객체
         log.info("POST /memo/add..." +dto);
         //파라미터
         //입력값 검증(데이터)
@@ -61,6 +71,7 @@ public class MemoController {
                 model.addAttribute(error.getField(),error.getDefaultMessage());
             }
         }
+        throw new NullPointerException("예외발생");
         //서비스 요청
         //뷰로 이동 -> Domaon.Common.Service
     }

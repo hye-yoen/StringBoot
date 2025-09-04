@@ -22,6 +22,13 @@ import java.util.Objects;
 @RequestMapping("/memo")
 public class MemoController {
 
+//    @ExceptionHandler(Exception.class)
+//    public String exception_handler(Exception e){
+//        log.error("MemoController's Exception..." + e);
+//        return "memo/error";
+//    }
+
+
     @InitBinder //WebDataBinder  초기화
     public void dataBinder(WebDataBinder webDataBinder){ //WebDataBinder 요청 매개변수(form 또는 query 데이터)를 모델 객체에 바인딩
         log.info("MemoController's dataBinder..." + webDataBinder);
@@ -35,7 +42,9 @@ public class MemoController {
             log.info("DataTestEditor's setAsText text : " + text);
             LocalDate date = null;
             if(text.isEmpty()){
-                date = LocalDate.now(); //text가 비어 있다면 현재 날짜 고정
+                date = LocalDate.now();
+                 //text가 비어 있다면 현재 날짜 고정
+
             }else{
                 //format 확인(yyy#MM#dd)
                 text = text.replaceAll("#","-"); //# -> -
@@ -61,6 +70,7 @@ public class MemoController {
                 model.addAttribute(error.getField(),error.getDefaultMessage());
             }
         }
+        throw new NullPointerException("예외발생");
         //서비스 요청
         //뷰로 이동 -> Domaon.Common.Service
     }
