@@ -1,8 +1,10 @@
 package com.example.demo.Controller;
 
 import com.example.demo.Domain.Common.Dto.MemoDto;
+import com.example.demo.Domain.Common.Service.MemoService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
@@ -22,6 +25,9 @@ import java.util.Objects;
 @RequestMapping("/memo")
 public class MemoController {
 
+    @Autowired
+    private MemoService memoService;
+
 //    @ExceptionHandler(Exception.class)
 //    public String exception_handler(Exception e){
 //        log.error("MemoController's Exception..." + e);
@@ -30,7 +36,8 @@ public class MemoController {
 
 
     @InitBinder //WebDataBinder  초기화
-    public void dataBinder(WebDataBinder webDataBinder) throws Exception{ //WebDataBinder 요청 매개변수(form 또는 query 데이터)를 모델 객체에 바인딩
+    public void dataBinder(WebDataBinder webDataBinder) throws Exception{
+        //WebDataBinder 요청 매개변수(form 또는 query 데이터)를 모델 객체에 바인딩
         log.info("MemoController's dataBinder..." + webDataBinder);
         webDataBinder.registerCustomEditor(LocalDate.class, "data_test",new DataTestEditor() );
         //Local class의 필드(data_Test)를 새로운  DataTestEditor로 반환
@@ -59,7 +66,7 @@ public class MemoController {
         log.info("GET /memo/add...");
     }
     @PostMapping("/add")
-    public void add_memo_post(@Valid MemoDto dto, BindingResult bindingResult, Model model) throws Exception
+    public String add_memo_post(@Valid MemoDto dto, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) throws Exception
     {  //BindingResult => 검증 오류 처리 및 보관 객체
         log.info("POST /memo/add..." +dto);
         //파라미터
@@ -69,10 +76,18 @@ public class MemoController {
             for(FieldError error : bindingResult.getFieldErrors()){
                 log.info("Error Field: "+error.getField()+ "Error Message : "+error.getDefaultMessage());
                 model.addAttribute(error.getField(),error.getDefaultMessage());
+                //키 ,값 형태로 model 전달
             }
+            return "memo/add";
         }
-        throw new NullPointerException("예외발생");
+        //throw new NullPointerException("예외발생");
         //서비스 요청
+        boolean isAdded = memoService.memoRegisstration(dto); //메모서비스 연결 memo.. 로전달
+        if(isAdded)
+            redirectAttributes.addFlashAttribute("message","메모등록완료");
+        //메세지라는 키로 전달
+
         //뷰로 이동 -> Domaon.Common.Service
+        return isAdded? "redirect:/":"memo/add";
     }
 }
