@@ -17,7 +17,7 @@ class BookRepositoryTest {
     @Autowired
     private BookRepository bookRepository;
 
-    @DisplayName("--기본 CRUD 확인--")
+    @DisplayName("--기본 CRUD 확인--") //사람이 더 읽기 쉽게 해주는 것 (중요 x)
     @Test
     public void t1(){
         Book book = Book.builder()

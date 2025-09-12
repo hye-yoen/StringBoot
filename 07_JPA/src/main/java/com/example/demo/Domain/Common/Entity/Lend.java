@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Lend {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // id 자동 증가
     private Long id;
-    @ManyToOne // n:1
+    @ManyToOne(fetch = FetchType.LAZY) // n:1
     @JoinColumn (  //어떤 컬럼과 연결될지 사용 할때
         name ="username",  //표시할 외래키 컬럼명
         foreignKey =  @ForeignKey(
@@ -26,10 +26,10 @@ public class Lend {
     )
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
             name="bookCode",
-            foreignKey = @ForeignKey(name="FK_LEND_BOOK", //결론 : 백틱빼삼 그거때문에 애초에 안 들어가짐 ㄷ
+            foreignKey = @ForeignKey(name="FK_LEND_BOOK", //결론 : 백틱빼삼 그거때문에 애초에 안 들어가짐 (욕 가능?)
                     foreignKeyDefinition = "FOREIGN KEY (BookCode) REFERENCES book(BookCode) ON DELETE NO ACTION ON UPDATE CASCADE"
             )
     )
